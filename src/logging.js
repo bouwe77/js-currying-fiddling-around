@@ -8,9 +8,9 @@ function example1() {
     console.log(`${datetime} [${severity}] - ${message}`);
   }
 
-  const myDate = new Date().toISOString();
-  log(myDate, "INFO", "This is an informational message");
-  log(myDate, "ERROR", "An exception occurred");
+  const datetime = new Date();
+  log(datetime, "INFO", "This is an informational message");
+  log(datetime, "ERROR", "An exception occurred");
 }
 //example1()
 
@@ -24,7 +24,7 @@ function example2() {
     console.log(`${datetime} [${severity}] - ${message}`);
   }
 
-  const utcDate = new Date().toISOString();
+  const utcDate = new Date();
   const logInformation = (message) => log(utcDate, "INFO", message);
   const logError = (message) => log(utcDate, "ERROR", message);
 
@@ -41,15 +41,18 @@ function example3() {
   //
   //
   //
-  function log(datetime) {
-    return function (severity) {
-      return function (message) {
-        console.log(`${datetime} [${severity}] - ${message}`);
-      };
-    };
-  }
 
-  const utcDate = new Date().toISOString();
+  // function log(datetime) {
+  //   return function (severity) {
+  //     return function (message) {
+  //       console.log(`${datetime} [${severity}] - ${message}`);
+  //     };
+  //   };
+  // }
+  const log = (datetime) => (severity) => (message) =>
+    console.log(`${datetime} [${severity}] - ${message}`);
+
+  const utcDate = new Date();
   const logInformation = log(utcDate)("INFO");
   const logError = log(utcDate)("ERROR");
 
