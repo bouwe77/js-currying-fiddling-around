@@ -1,5 +1,15 @@
 const assert = require("assert");
 
+console.clear();
+
+// STEP 0: An imperative, non functional approach:
+function decimaltoRomanNumeral_IMPERATIVE(decimal) {
+  let romanNumeral = "I".repeat(decimal);
+  return romanNumeral;
+}
+
+test(2, "II", decimaltoRomanNumeral_IMPERATIVE);
+
 // STEP 1: Create the "replicate I character" and a curried replace functions
 
 // This function returns a string with the given number of "I"s
@@ -27,13 +37,6 @@ function decimaltoRomanNumeral(decimal) {
   return replace_XXXXX_with_L(
     replace_VV_with_X(replace_IIIII_with_V(replicateIs(decimal)))
   );
-
-  // As soon as this is supported: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Pipeline_operator
-  // return decimal
-  //   |> replicateIs
-  //   |> replace_IIIII_with_V
-  //   |> replace_VV_with_X
-  //   |> replace_XXXXX_with_L;
 }
 
 // STEP 4: Let's do some testing :)
@@ -42,16 +45,48 @@ decimaltoRomanNumeral(5); // "V"
 decimaltoRomanNumeral(6); // "VI"
 // etc.
 
-test(2, "II");
-test(4, "IIII");
-test(5, "V");
-test(6, "VI");
+// STEP 5: Prevent nested function calls:
+const compose = (...fns) => (x) => fns.reduceRight((y, f) => f(y), x);
+
+// Note how we order the function calls from last to first, just like we did when nesting:
+const decimaltoRomanNumeral_2 = compose(
+  replace_XXXXX_with_L,
+  replace_VV_with_X,
+  replace_IIIII_with_V,
+  replicateIs
+);
+
+// STEP 6: Piping Instead of composing use piping, so we can order the function calls from first to last
+
+// Piping in other languages would work like this:
+// As soon as this is supported: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Pipeline_operator
+// return decimal
+//   |> replicateIs
+//   |> replace_IIIII_with_V
+//   |> replace_VV_with_X
+//   |> replace_XXXXX_with_L;
+
+// But we can do this:
+const pipe = (...fns) => (x) => fns.reduce((y, f) => f(y), x);
+const decimaltoRomanNumeral_3 = pipe(
+  replicateIs,
+  replace_IIIII_with_V,
+  replace_VV_with_X,
+  replace_XXXXX_with_L
+);
+
+// ===================== TESTS ==========================
+
+// test(2, "II", decimaltoRomanNumeral_3);
+// test(4, "IIII", decimaltoRomanNumeral_3);
+// test(5, "V", decimaltoRomanNumeral_3);
+// test(6, "VI", decimaltoRomanNumeral_3);
 
 // This is a utility function to make the tests more readable:
-function test(decimalNumber, romanNumeral) {
+function test(decimalNumber, romanNumeral, sut) {
   let result = "✅ OK";
   try {
-    assert.strictEqual(decimaltoRomanNumeral(decimalNumber), romanNumeral);
+    assert.strictEqual(sut(decimalNumber), romanNumeral);
   } catch {
     result = "❌ NOK";
   }

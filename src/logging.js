@@ -61,4 +61,35 @@ function example3() {
   logError("An exception occurred!");
 }
 
-example3();
+//example3();
+
+function example4() {
+  function curry(fn) {
+    return function curried(...args) {
+      if (args.length >= fn.length) return fn(...args);
+      return function (a) {
+        return curried(...[...args, a]);
+      };
+    };
+  }
+
+  function log(datetime, severity, message) {
+    console.log(`${datetime} [${severity}] - ${message}`);
+  }
+
+  let curriedLog = curry(log);
+
+  // We can call log with all 3 arguments:
+  curriedLog(new Date(), "INFO", "This is an informational message");
+
+  // We can pass all arguments separately:
+  curriedLog(new Date())("INFO")("This is an informational message");
+
+  // And we can apply partial application:
+  const logInfo = curriedLog(new Date())("INFO");
+  logInfo("This is an informational message");
+
+  // etc. etc.
+}
+
+example4();
