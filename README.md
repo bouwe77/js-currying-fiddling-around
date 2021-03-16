@@ -1,2 +1,2 @@
-# js-currying
+# js-currying-fiddling-around
 Created with CodeSandbox
